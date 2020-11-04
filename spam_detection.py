@@ -1,12 +1,16 @@
 import imaplib
 import email
 from email.header import decode_header
-import smtplib
 import pickle
 import pandas as pd
+# import sklearn
+# import smtplib
 
-username = input("Enter your mail id : ")
-password = input("Password : ")
+# username = input("Enter your mail id : ")  # villersabde360@gmail.com
+# password = input("Password : ")
+username = "villersabde360@gmail.com"
+password = "/*-+7896"
+
 imap = imaplib.IMAP4_SSL("imap.gmail.com")
 result = imap.login(username, password)
 imap.select('"[Gmail]/All Mail"', readonly=True)
@@ -19,13 +23,13 @@ oldest = int(messages[0])
 
 def findWords(message):
     df = pd.read_csv("emails.csv")
-    x = df.iloc[0:1, 1:3001]
+    x = list(df.iloc[0:0, 1:3001])
     result = []
     for a in x:
         if a in message:
-            result.append(1)
+            result.append(message.count(a))
         else:
-            result.append(0)
+            result.append(0)            
     return [result]
 
 
@@ -34,25 +38,28 @@ def findSpamOrNot(msg):
     loaded_model = pickle.load(open(email_spam_model, 'rb'))
     existing_words = findWords(msg)
     result = loaded_model.predict(existing_words)
+    print(result)
     if result[0] == 1:
         print("Spam Mail")
     else:
         print("Not a spam")
 
 
-for i in range(latest, latest-5, -1):
+for i in range(latest, latest-8, -1):
     res, msg = imap.fetch(str(i), "(RFC822)")
     for response in msg:
         if isinstance(response, tuple):
             msg = email.message_from_bytes(response[1])
             print("***************************")
-            print(msg["From"])
-            print(msg["Subject"])
-            if msg["Subject"] is not None:
-                findSpamOrNot(msg["Subject"])
-            print("***************************")
+            print("\n From ,{}".format(msg["From"]))
+            print("\n Subject ,{}".format(msg["Subject"]))
+            # if msg["Subject"] is not None:
+            #     findSpamOrNot(msg["Subject"])
 
     for part in msg.walk():
-        if part.get_content_type() == "text / plain":
+        if part.get_content_type() == "text/plain":
             body = part.get_payload(decode=True)
-            print(f'Body: {body.decode("UTF-8")}',body )
+            print('Body: {}'.format(str(body.decode())))
+            if body is not None:
+                findSpamOrNot(str(body))
+            print("***************************")
