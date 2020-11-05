@@ -3,8 +3,7 @@ import email
 from email.header import decode_header
 import pickle
 import pandas as pd
-# import sklearn
-# import smtplib
+
 
 # username = input("Enter your mail id : ")  # villersabde360@gmail.com
 # password = input("Password : ")
@@ -53,9 +52,7 @@ for i in range(latest, latest-8, -1):
             print("***************************")
             print("\n From ,{}".format(msg["From"]))
             print("\n Subject ,{}".format(msg["Subject"]))
-            # if msg["Subject"] is not None:
-            #     findSpamOrNot(msg["Subject"])
-
+            
     for part in msg.walk():
         if part.get_content_type() == "text/plain":
             body = part.get_payload(decode=True)
